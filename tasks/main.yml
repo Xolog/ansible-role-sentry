@@ -35,6 +35,14 @@
   async: 600
   poll: 30
 
+- name: Ensure compose file
+  template:
+    src: docker-compose.yml
+    dest: /etc/sentry/docker-compose.yml
+    mode: 0644
+    owner: root
+    group: root
+
 - name: Configure sentry email settings
   loop: "{{ sentry_mail | dict2items }}"
   ansible.builtin.lineinfile:
@@ -55,6 +63,13 @@
     path: "{{ sentry_docker_compose_project_folder }}/sentry/config.yml"
     regexp: "^#?\\s*{{ item.key }}:"
     line: "{{ item.key }}: {{ item.value | to_json }}"
+
+- name: Configure sentry misc python settings
+  loop: "{{ sentry_config_py | dict2items }}"
+  ansible.builtin.lineinfile:
+    path: "{{ sentry_docker_compose_project_folder }}/sentry/sentry.conf.py"
+    regexp: "^#?\\s*{{ item.key | regex_escape() }}:"
+    line: "{{ item.key }}: {{ item.value }}"
 
 - name: Start sentry self hosted docker-compose project
   community.docker.docker_compose_v2:

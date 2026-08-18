@@ -8,6 +8,7 @@ sentry_bind: 9000
 sentry_env: {}
 sentry_mail: {}
 sentry_config: {}
+sentry_config_py: {}
 
 sentry_url: "https://url.com"
 sentry_superusers: []
